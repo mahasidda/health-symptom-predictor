@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://health-symptom-predictor-fszu.onrender.com/api',
 });
 
 function SymptomChip({ symptom, selected, onToggle }) {
