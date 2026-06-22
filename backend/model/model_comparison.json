@@ -1,0 +1,17 @@
+{
+  "best_model": "Naive Bayes",
+  "results": {
+    "Decision Tree": {
+      "accuracy": 0.8092,
+      "f1_score": 0.8077
+    },
+    "Random Forest": {
+      "accuracy": 0.9254,
+      "f1_score": 0.9252
+    },
+    "Naive Bayes": {
+      "accuracy": 0.9276,
+      "f1_score": 0.9277
+    }
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "Common Cold": {
+    "precautions": [
+      "Drink warm fluids and stay hydrated",
+      "Get adequate rest",
+      "Use steam inhalation for congestion",
+      "Avoid cold drinks and air conditioning"
+    ],
+    "doctor": "General Physician",
+    "severity": "Low"
+  },
+  "Influenza (Flu)": {
+    "precautions": [
+      "Rest and isolate to avoid spreading infection",
+      "Stay hydrated with fluids and electrolytes",
+      "Take fever-reducing medication if needed",
+      "Seek medical attention if breathlessness develops"
+    ],
+    "doctor": "General Physician",
+    "severity": "Moderate"
+  },
+  "COVID-19": {
+    "precautions": [
+      "Isolate immediately and inform close contacts",
+      "Monitor oxygen saturation (SpO2) regularly",
+      "Stay hydrated and rest",
+      "Seek emergency care if breathlessness or chest pain occurs"
+    ],
+    "doctor": "General Physician / Pulmonologist",
+    "severity": "Moderate to High"
+  },
+  "Migraine": {
+    "precautions": [
+      "Rest in a dark, quiet room",
+      "Stay hydrated and maintain regular sleep schedule",
+      "Avoid known triggers (bright light, certain foods)",
+      "Consult a doctor if headaches are frequent or severe"
+    ],
+    "doctor": "Neurologist",
+    "severity": "Low to Moderate"
+  },
+  "Malaria": {
+    "precautions": [
+      "Seek medical testing (blood smear / RDT) immediately",
+      "Use mosquito nets and repellents to prevent spread",
+      "Stay hydrated and rest",
+      "Complete the full course of prescribed medication"
+    ],
+    "doctor": "General Physician / Infectious Disease Specialist",
+    "severity": "High"
+  },
+  "Typhoid": {
+    "precautions": [
+      "Drink only boiled or bottled water",
+      "Maintain strict food hygiene",
+      "Take prescribed antibiotics as directed",
+      "Get adequate rest and nutrition"
+    ],
+    "doctor": "General Physician",
+    "severity": "High"
+  },
+  "Dengue": {
+    "precautions": [
+      "Monitor platelet count with regular blood tests",
+      "Stay hydrated with fluids and ORS",
+      "Avoid NSAIDs like ibuprofen/aspirin",
+      "Seek immediate care if bleeding or severe pain occurs"
+    ],
+    "doctor": "General Physician / Infectious Disease Specialist",
+    "severity": "High"
+  },
+  "Diabetes": {
+    "precautions": [
+      "Monitor blood sugar levels regularly",
+      "Maintain a balanced, low-sugar diet",
+      "Exercise regularly",
+      "Consult an endocrinologist for medication management"
+    ],
+    "doctor": "Endocrinologist",
+    "severity": "Chronic - requires ongoing management"
+  },
+  "Hypertension": {
+    "precautions": [
+      "Reduce salt intake",
+      "Monitor blood pressure regularly",
+      "Exercise and manage stress",
+      "Take prescribed medication consistently"
+    ],
+    "doctor": "Cardiologist",
+    "severity": "Chronic - requires ongoing management"
+  },
+  "Asthma": {
+    "precautions": [
+      "Avoid known triggers (dust, smoke, allergens)",
+      "Keep a rescue inhaler accessible",
+      "Practice breathing exercises",
+      "Seek emergency care for severe breathlessness"
+    ],
+    "doctor": "Pulmonologist",
+    "severity": "Moderate"
+  },
+  "Pneumonia": {
+    "precautions": [
+      "Seek medical attention promptly",
+      "Get adequate rest and hydration",
+      "Complete prescribed antibiotic/antiviral course",
+      "Monitor breathing and oxygen levels"
+    ],
+    "doctor": "Pulmonologist",
+    "severity": "High"
+  },
+  "Bronchitis": {
+    "precautions": [
+      "Avoid smoking and irritants",
+      "Use a humidifier",
+      "Stay hydrated",
+      "Consult a doctor if cough persists beyond 2 weeks"
+    ],
+    "doctor": "Pulmonologist / General Physician",
+    "severity": "Moderate"
+  },
+  "Gastritis": {
+    "precautions": [
+      "Avoid spicy, oily, and acidic foods",
+      "Eat smaller, more frequent meals",
+      "Avoid alcohol and NSAIDs",
+      "Consult a doctor if pain persists"
+    ],
+    "doctor": "Gastroenterologist",
+    "severity": "Moderate"
+  },
+  "Allergy": {
+    "precautions": [
+      "Identify and avoid the allergen",
+      "Take antihistamines as advised",
+      "Keep living spaces clean and dust-free",
+      "Seek urgent care for swelling or breathing difficulty"
+    ],
+    "doctor": "Allergist / General Physician",
+    "severity": "Low to Moderate"
+  },
+  "Chickenpox": {
+    "precautions": [
+      "Isolate to prevent spreading",
+      "Avoid scratching to prevent scarring/infection",
+      "Keep skin clean and use calamine lotion",
+      "Consult a doctor for fever management"
+    ],
+    "doctor": "General Physician / Dermatologist",
+    "severity": "Moderate"
+  },
+  "Jaundice": {
+    "precautions": [
+      "Get liver function tests done",
+      "Avoid alcohol and fatty foods",
+      "Rest and stay hydrated",
+      "Follow up with a doctor for the underlying cause"
+    ],
+    "doctor": "Gastroenterologist / Hepatologist",
+    "severity": "High"
+  },
+  "Tuberculosis": {
+    "precautions": [
+      "Seek immediate medical diagnosis and treatment",
+      "Complete the full course of medication (DOTS)",
+      "Maintain good ventilation and avoid close contact",
+      "Eat a nutritious diet to support recovery"
+    ],
+    "doctor": "Pulmonologist",
+    "severity": "High"
+  },
+  "Arthritis": {
+    "precautions": [
+      "Maintain a healthy weight to reduce joint stress",
+      "Do low-impact exercises like swimming or walking",
+      "Apply hot/cold therapy for pain relief",
+      "Consult a rheumatologist for medication"
+    ],
+    "doctor": "Rheumatologist / Orthopedist",
+    "severity": "Chronic - requires ongoing management"
+  },
+  "Urinary Tract Infection": {
+    "precautions": [
+      "Drink plenty of water",
+      "Avoid holding urine for long periods",
+      "Maintain proper hygiene",
+      "Complete the prescribed antibiotic course"
+    ],
+    "doctor": "Urologist / General Physician",
+    "severity": "Moderate"
+  }
+}
