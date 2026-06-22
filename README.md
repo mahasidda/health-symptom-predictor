@@ -84,3 +84,115 @@ Common Cold, Influenza, COVID-19, Migraine, Malaria, Typhoid, Dengue, Diabetes, 
 
 \## 📁 Project Structure
 
+health-symptom-predictor/
+
+
+
+├── backend/
+
+
+
+│   ├── app.py
+
+
+
+│   ├── requirements.txt
+
+
+
+│   ├── Procfile
+
+
+
+│   └── model/
+
+
+
+│       ├── train\_model.py
+
+
+
+│       ├── model.pkl
+
+
+
+│       ├── label\_encoder.pkl
+
+
+
+│       ├── symptoms.json
+
+
+
+│       ├── precautions.json
+
+
+
+│       └── dataset.csv
+
+
+
+└── frontend/
+
+
+
+└── src/
+
+
+
+├── App.js
+
+
+
+└── pages/
+
+
+
+└── SymptomPredictorPage.jsx
+
+
+
+\## ⚙️ Run Locally
+
+
+
+\### Backend
+
+```bash
+
+cd backend
+
+pip install -r requirements.txt
+
+python app.py
+
+```
+
+
+
+\### Frontend
+
+```bash
+
+cd frontend
+
+npm install
+
+npm start
+
+```
+
+
+
+\## 🚀 Deployment
+
+\- Backend deployed on \*\*Render\*\*
+
+\- Frontend deployed on \*\*Vercel\*\*
+
+
+
+\## ⚠️ Disclaimer
+
+This app is for educational purposes only and is not a substitute for professional medical advice. Always consult a licensed doctor.
+
