@@ -31,7 +31,6 @@ def vectorize_symptoms(selected_symptoms):
 def map_symptom_with_ai(user_input):
     api_key = os.environ.get('ANTHROPIC_API_KEY', '')
     print(f"API Key present: {bool(api_key)}")
-    print(f"API Key starts with: {api_key[:10] if api_key else 'MISSING'}")
 
     if not api_key:
         print("ERROR: ANTHROPIC_API_KEY not set")
@@ -39,7 +38,7 @@ def map_symptom_with_ai(user_input):
 
     try:
         payload = json.dumps({
-            "model": "claude-haiku-4-5-20251001",
+            "model": "claude-haiku-4-5",
             "max_tokens": 200,
             "messages": [{
                 "role": "user",
