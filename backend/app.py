@@ -29,6 +29,14 @@ def vectorize_symptoms(selected_symptoms):
 
 
 def map_symptom_with_ai(user_input):
+    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    print(f"API Key present: {bool(api_key)}")
+    print(f"API Key starts with: {api_key[:10] if api_key else 'MISSING'}")
+
+    if not api_key:
+        print("ERROR: ANTHROPIC_API_KEY not set")
+        return []
+
     try:
         payload = json.dumps({
             "model": "claude-sonnet-4-6",
@@ -49,14 +57,17 @@ Return only the JSON array, nothing else."""
             headers={
                 'Content-Type': 'application/json',
                 'anthropic-version': '2023-06-01',
-                'x-api-key': os.environ.get('ANTHROPIC_API_KEY', '')
+                'x-api-key': api_key
             }
         )
-        with urllib.request.urlopen(req, timeout=10) as response:
+        with urllib.request.urlopen(req, timeout=15) as response:
             data = json.loads(response.read().decode('utf-8'))
             text = data['content'][0]['text'].strip()
+            print(f"AI response: {text}")
             clean = text.replace('```json', '').replace('```', '').strip()
-            return json.loads(clean)
+            result = json.loads(clean)
+            print(f"Mapped symptoms: {result}")
+            return result
     except Exception as e:
         print(f"AI mapping error: {e}")
         return []
@@ -110,7 +121,9 @@ def map_symptom():
     user_input = data.get("input", "").strip()
     if not user_input:
         return jsonify({"mapped": [], "error": "No input provided"}), 400
+    print(f"Mapping symptom: {user_input}")
     mapped = map_symptom_with_ai(user_input)
+    print(f"Result: {mapped}")
     return jsonify({"mapped": mapped, "original": user_input})
 
 
@@ -130,7 +143,10 @@ def predict():
     confidence = round(float(proba[top_idx]) * 100, 2)
     top3_idx = np.argsort(proba)[::-1][:3]
     top3 = [
-        {"disease": label_encoder.inverse_transform([i])[0], "confidence": round(float(proba[i]) * 100, 2)}
+        {
+            "disease": label_encoder.inverse_transform([i])[0],
+            "confidence": round(float(proba[i]) * 100, 2)
+        }
         for i in top3_idx
     ]
     info = DISEASE_INFO.get(disease, {})
