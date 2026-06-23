@@ -6,28 +6,10 @@ const api = axios.create({
   baseURL: 'https://health-symptom-predictor-fszu.onrender.com/api',
 });
 
-async function mapToKnownSymptoms(userInput, allSymptoms) {
+async function mapToKnownSymptoms(userInput) {
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: `You are a medical symptom mapper. The user described a symptom as: "${userInput}".
-From this list of known symptoms: ${allSymptoms.join(', ')}.
-Return ONLY a JSON array of the most relevant matching symptoms from the list above (max 3).
-Example: ["chest_pain", "breathlessness"]
-Return only the JSON array, nothing else.`
-        }]
-      })
-    });
-    const data = await response.json();
-    const text = data.content[0].text.trim();
-    const clean = text.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean);
+    const res = await api.post('/map-symptom', { input: userInput });
+    return res.data.mapped || [];
   } catch {
     return [];
   }
@@ -93,7 +75,6 @@ function ResultCard({ result, name, age, symptoms, mappedSymptoms }) {
       borderRadius: 14, padding: 22, marginTop: 20,
       boxShadow: '0 4px 16px rgba(99,102,241,0.10)'
     }}>
-      {/* Mapped symptoms notice */}
       {mappedSymptoms?.length > 0 && (
         <div style={{
           marginBottom: 14, padding: '10px 14px', borderRadius: 8,
@@ -163,13 +144,13 @@ function ResultCard({ result, name, age, symptoms, mappedSymptoms }) {
 }
 
 export default function SymptomPredictorPage() {
-  const [allSymptoms, setAllSymptoms] = useState([]);
-  const [selected, setSelected]       = useState([]);
-  const [search, setSearch]           = useState('');
-  const [name, setName]               = useState('');
-  const [age, setAge]                 = useState('');
-  const [result, setResult]           = useState(null);
-  const [loading, setLoading]         = useState(false);
+  const [allSymptoms, setAllSymptoms]   = useState([]);
+  const [selected, setSelected]         = useState([]);
+  const [search, setSearch]             = useState('');
+  const [name, setName]                 = useState('');
+  const [age, setAge]                   = useState('');
+  const [result, setResult]             = useState(null);
+  const [loading, setLoading]           = useState(false);
   const [mappedSymptoms, setMappedSymptoms] = useState([]);
 
   useEffect(() => {
@@ -182,6 +163,10 @@ export default function SymptomPredictorPage() {
     setSelected(sel => sel.includes(s) ? sel.filter(x => x !== s) : [...sel, s]);
   };
 
+  const filtered = allSymptoms.filter(s =>
+    s.toLowerCase().includes(search.toLowerCase())
+  );
+
   const handlePredict = async () => {
     setLoading(true);
     setResult(null);
@@ -189,17 +174,15 @@ export default function SymptomPredictorPage() {
 
     let symptomsToUse = [...selected];
 
-    // if user typed something not in the list, use AI to map it
     if (search.trim() !== '' && filtered.length === 0) {
       toast.info('Symptom not in list — using AI to find closest match...');
-      const mapped = await mapToKnownSymptoms(search.trim(), allSymptoms);
+      const mapped = await mapToKnownSymptoms(search.trim());
       if (mapped.length === 0) {
         toast.error('Could not match your symptom. Please try selecting from the list.');
         setLoading(false);
         return;
       }
       setMappedSymptoms(mapped);
-      // merge with already selected
       mapped.forEach(s => { if (!symptomsToUse.includes(s)) symptomsToUse.push(s); });
     }
 
@@ -218,8 +201,6 @@ export default function SymptomPredictorPage() {
       setLoading(false);
     }
   };
-
-  const filtered = allSymptoms.filter(s => s.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <>
@@ -263,9 +244,12 @@ export default function SymptomPredictorPage() {
           </div>
 
           {/* Search */}
-          <input placeholder="🔍 Search symptoms or type anything (e.g. heartpain, chest tightness)..."
-            value={search} onChange={e => { setSearch(e.target.value); setResult(null); }}
-            style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, marginBottom: 12, boxSizing: 'border-box', outline: 'none' }} />
+          <input
+            placeholder="🔍 Search symptoms or type anything (e.g. heartpain, chest tightness)..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setResult(null); }}
+            style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, marginBottom: 12, boxSizing: 'border-box', outline: 'none' }}
+          />
 
           {/* Symptom chips */}
           <div style={{
@@ -304,7 +288,9 @@ export default function SymptomPredictorPage() {
                 </button>
               )}
             </div>
-            <button onClick={handlePredict} disabled={loading || (selected.length === 0 && search.trim() === '')}
+            <button
+              onClick={handlePredict}
+              disabled={loading || (selected.length === 0 && search.trim() === '')}
               style={{
                 padding: '11px 28px',
                 background: loading || (selected.length === 0 && search.trim() === '') ? '#c7d2fe' : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
@@ -318,7 +304,7 @@ export default function SymptomPredictorPage() {
             </button>
           </div>
 
-          {/* Skeleton */}
+          {/* Skeleton loader */}
           {loading && (
             <div style={{ marginTop: 20, background: 'white', border: '1px solid #e5e7eb', borderRadius: 14, padding: 22 }}>
               {[200, 140, 100, '100%', '90%', '95%'].map((w, i) => (
