@@ -144,13 +144,13 @@ function ResultCard({ result, name, age, symptoms, mappedSymptoms }) {
 }
 
 export default function SymptomPredictorPage() {
-  const [allSymptoms, setAllSymptoms]   = useState([]);
-  const [selected, setSelected]         = useState([]);
-  const [search, setSearch]             = useState('');
-  const [name, setName]                 = useState('');
-  const [age, setAge]                   = useState('');
-  const [result, setResult]             = useState(null);
-  const [loading, setLoading]           = useState(false);
+  const [allSymptoms, setAllSymptoms]       = useState([]);
+  const [selected, setSelected]             = useState([]);
+  const [search, setSearch]                 = useState('');
+  const [name, setName]                     = useState('');
+  const [age, setAge]                       = useState('');
+  const [result, setResult]                 = useState(null);
+  const [loading, setLoading]               = useState(false);
   const [mappedSymptoms, setMappedSymptoms] = useState([]);
 
   useEffect(() => {
@@ -175,7 +175,6 @@ export default function SymptomPredictorPage() {
     let symptomsToUse = [...selected];
 
     if (search.trim() !== '' && filtered.length === 0) {
-      toast.info('Symptom not in list — using AI to find closest match...');
       const mapped = await mapToKnownSymptoms(search.trim());
       if (mapped.length === 0) {
         toast.error('Could not match your symptom. Please try selecting from the list.');
@@ -213,7 +212,6 @@ export default function SymptomPredictorPage() {
 
       <div style={{ maxWidth: 820, margin: '0 auto', padding: '32px 16px', fontFamily: 'Inter, system-ui, sans-serif' }}>
 
-        {/* Header */}
         <div style={{
           textAlign: 'center', marginBottom: 24,
           background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)',
@@ -226,16 +224,14 @@ export default function SymptomPredictorPage() {
             AI Health Symptom Predictor
           </div>
           <div style={{ fontSize: 14, color: '#374151', marginTop: 8, lineHeight: 1.6 }}>
-            Select symptoms or type anything — AI will find the closest match.
+            Select symptoms or type anything — we will find the closest match.
           </div>
         </div>
 
-        {/* Main card */}
         <div style={{
           background: 'rgba(255,255,255,0.97)', borderRadius: 20, padding: 24,
           boxShadow: '0 8px 32px rgba(0,0,0,0.12)', border: '1px solid rgba(255,255,255,0.5)'
         }}>
-          {/* Patient details */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
             <input placeholder="Name (optional)" value={name} onChange={e => setName(e.target.value)}
               style={{ flex: 1, minWidth: 160, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, outline: 'none' }} />
@@ -243,15 +239,13 @@ export default function SymptomPredictorPage() {
               style={{ width: 120, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, outline: 'none' }} />
           </div>
 
-          {/* Search */}
           <input
-            placeholder="🔍 Search symptoms or type anything (e.g. heartpain, chest tightness)..."
+            placeholder="🔍 Search symptoms or type anything (e.g. heartpain, stomach ache)..."
             value={search}
             onChange={e => { setSearch(e.target.value); setResult(null); }}
             style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, marginBottom: 12, boxSizing: 'border-box', outline: 'none' }}
           />
 
-          {/* Symptom chips */}
           <div style={{
             display: 'flex', flexWrap: 'wrap', gap: 8,
             maxHeight: 240, overflowY: 'auto', padding: 12,
@@ -266,12 +260,11 @@ export default function SymptomPredictorPage() {
                 background: '#eff6ff', borderRadius: 8, width: '100%',
                 border: '1px solid #bfdbfe'
               }}>
-                💡 <strong>"{search}"</strong> is not in our list — click <strong>Predict</strong> and AI will automatically find the closest matching symptoms for you.
+                💡 <strong>"{search}"</strong> is not in our list — click <strong>Predict</strong> and we will automatically find the closest matching symptom for you.
               </div>
             )}
           </div>
 
-          {/* Count + clear + predict */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, flexWrap: 'wrap', gap: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ fontSize: 13, color: '#6b7280' }}>
@@ -304,7 +297,6 @@ export default function SymptomPredictorPage() {
             </button>
           </div>
 
-          {/* Skeleton loader */}
           {loading && (
             <div style={{ marginTop: 20, background: 'white', border: '1px solid #e5e7eb', borderRadius: 14, padding: 22 }}>
               {[200, 140, 100, '100%', '90%', '95%'].map((w, i) => (
