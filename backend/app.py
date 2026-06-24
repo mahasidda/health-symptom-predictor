@@ -1,12 +1,12 @@
 import os
 import json
 from datetime import datetime
+from difflib import get_close_matches
 
 import joblib
 import numpy as np
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-import urllib.request
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "model")
@@ -23,50 +23,124 @@ with open(os.path.join(MODEL_DIR, "symptoms.json")) as f:
 with open(os.path.join(MODEL_DIR, "precautions.json")) as f:
     DISEASE_INFO = json.load(f)
 
+# Common symptom aliases — maps user words to known symptoms
+SYMPTOM_ALIASES = {
+    "heartpain": "chest_pain",
+    "heart pain": "chest_pain",
+    "heart ache": "chest_pain",
+    "stomachache": "abdominal_pain",
+    "stomach ache": "abdominal_pain",
+    "stomach pain": "abdominal_pain",
+    "tummy pain": "abdominal_pain",
+    "belly pain": "abdominal_pain",
+    "runny nose": "runny_nose",
+    "blocked nose": "runny_nose",
+    "stuffy nose": "runny_nose",
+    "high temperature": "high_fever",
+    "temperature": "mild_fever",
+    "fever": "mild_fever",
+    "hot body": "high_fever",
+    "sweating": "sweating",
+    "tired": "fatigue",
+    "tiredness": "fatigue",
+    "weakness": "weakness",
+    "weak": "weakness",
+    "dizzy": "dizziness",
+    "dizziness": "dizziness",
+    "throwing up": "vomiting",
+    "threw up": "vomiting",
+    "puke": "vomiting",
+    "puking": "vomiting",
+    "feel sick": "nausea",
+    "sick feeling": "nausea",
+    "can't breathe": "breathlessness",
+    "breathing problem": "breathlessness",
+    "shortness of breath": "breathlessness",
+    "breath problem": "breathlessness",
+    "joint ache": "joint_pain",
+    "knee pain": "joint_pain",
+    "back pain": "body_ache",
+    "body pain": "body_ache",
+    "muscle ache": "muscle_pain",
+    "skin rash": "rash",
+    "itchy skin": "itching",
+    "yellow eyes": "yellow_skin",
+    "yellowish skin": "yellow_skin",
+    "no appetite": "loss_of_appetite",
+    "not hungry": "loss_of_appetite",
+    "cant eat": "loss_of_appetite",
+    "frequent urination": "frequent_urination",
+    "urinating often": "frequent_urination",
+    "peeing often": "frequent_urination",
+    "excessive thirst": "excessive_thirst",
+    "always thirsty": "excessive_thirst",
+    "very thirsty": "excessive_thirst",
+    "blurry vision": "blurred_vision",
+    "blurry eyes": "blurred_vision",
+    "cant see clearly": "blurred_vision",
+    "losing weight": "weight_loss",
+    "weight loss": "weight_loss",
+    "dry cough": "dry_cough",
+    "wet cough": "cough",
+    "coughing": "cough",
+    "sore throat": "sore_throat",
+    "throat pain": "sore_throat",
+    "sneezing": "sneezing",
+    "chills": "chills",
+    "shivering": "chills",
+    "indigestion": "indigestion",
+    "acidity": "indigestion",
+    "stiffness": "stiffness",
+    "swollen": "swelling",
+    "swelling": "swelling",
+    "constipation": "constipation",
+    "cant poop": "constipation",
+    "sensitivity to light": "sensitivity_to_light",
+    "light sensitivity": "sensitivity_to_light",
+    "skin irritation": "skin_irritation",
+}
+
+
+def map_symptom_local(user_input):
+    user_lower = user_input.lower().strip()
+
+    # 1. Check aliases first
+    if user_lower in SYMPTOM_ALIASES:
+        mapped = SYMPTOM_ALIASES[user_lower]
+        print(f"Alias match: {user_lower} -> {mapped}")
+        return [mapped]
+
+    # 2. Check if any symptom contains the user input
+    contains_matches = [s for s in ALL_SYMPTOMS if user_lower in s or s in user_lower]
+    if contains_matches:
+        print(f"Contains match: {contains_matches[:2]}")
+        return contains_matches[:2]
+
+    # 3. Fuzzy match using difflib
+    # Replace spaces with underscores for better matching
+    user_underscore = user_lower.replace(' ', '_')
+    close = get_close_matches(user_underscore, ALL_SYMPTOMS, n=2, cutoff=0.4)
+    if close:
+        print(f"Fuzzy match: {close}")
+        return close
+
+    # 4. Word-by-word match
+    words = user_lower.split()
+    word_matches = []
+    for word in words:
+        for symptom in ALL_SYMPTOMS:
+            if word in symptom and len(word) > 3:
+                word_matches.append(symptom)
+    if word_matches:
+        print(f"Word match: {word_matches[:2]}")
+        return list(set(word_matches))[:2]
+
+    print(f"No match found for: {user_input}")
+    return []
+
 
 def vectorize_symptoms(selected_symptoms):
     return np.array([[1 if s in selected_symptoms else 0 for s in ALL_SYMPTOMS]])
-
-
-def map_symptom_with_ai(user_input):
-    api_key = os.environ.get('GEMINI_API_KEY', '')
-    print(f"Gemini API Key present: {bool(api_key)}")
-
-    if not api_key:
-        print("ERROR: GEMINI_API_KEY not set")
-        return []
-
-    try:
-        payload = json.dumps({
-            "contents": [{
-                "parts": [{
-                    "text": f"""You are a medical symptom mapper. The user described a symptom as: "{user_input}".
-From this list of known symptoms: {', '.join(ALL_SYMPTOMS)}.
-Return ONLY a JSON array of the most relevant matching symptoms from the list above (max 3).
-Example: ["chest_pain", "breathlessness"]
-Return only the JSON array, nothing else."""
-                }]
-            }]
-        }).encode('utf-8')
-
-        url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}'
-
-        req = urllib.request.Request(
-            url,
-            data=payload,
-            headers={'Content-Type': 'application/json'}
-        )
-        with urllib.request.urlopen(req, timeout=15) as response:
-            data = json.loads(response.read().decode('utf-8'))
-            text = data['candidates'][0]['content']['parts'][0]['text'].strip()
-            print(f"AI response: {text}")
-            clean = text.replace('```json', '').replace('```', '').strip()
-            result = json.loads(clean)
-            print(f"Mapped symptoms: {result}")
-            return result
-    except Exception as e:
-        print(f"AI mapping error: {e}")
-        return []
 
 
 def build_report_text(name, age, symptoms, prediction, confidence, info):
@@ -118,7 +192,7 @@ def map_symptom():
     if not user_input:
         return jsonify({"mapped": [], "error": "No input provided"}), 400
     print(f"Mapping symptom: {user_input}")
-    mapped = map_symptom_with_ai(user_input)
+    mapped = map_symptom_local(user_input)
     print(f"Result: {mapped}")
     return jsonify({"mapped": mapped, "original": user_input})
 
