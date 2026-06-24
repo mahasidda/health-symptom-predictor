@@ -29,39 +29,36 @@ def vectorize_symptoms(selected_symptoms):
 
 
 def map_symptom_with_ai(user_input):
-    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
-    print(f"API Key present: {bool(api_key)}")
+    api_key = os.environ.get('GEMINI_API_KEY', '')
+    print(f"Gemini API Key present: {bool(api_key)}")
 
     if not api_key:
-        print("ERROR: ANTHROPIC_API_KEY not set")
+        print("ERROR: GEMINI_API_KEY not set")
         return []
 
     try:
         payload = json.dumps({
-            "model": "claude-haiku-4-5-20251001",
-            "max_tokens": 200,
-            "messages": [{
-                "role": "user",
-                "content": f"""You are a medical symptom mapper. The user described a symptom as: "{user_input}".
+            "contents": [{
+                "parts": [{
+                    "text": f"""You are a medical symptom mapper. The user described a symptom as: "{user_input}".
 From this list of known symptoms: {', '.join(ALL_SYMPTOMS)}.
 Return ONLY a JSON array of the most relevant matching symptoms from the list above (max 3).
 Example: ["chest_pain", "breathlessness"]
 Return only the JSON array, nothing else."""
+                }]
             }]
         }).encode('utf-8')
 
+        url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}'
+
         req = urllib.request.Request(
-            'https://api.anthropic.com/v1/messages',
+            url,
             data=payload,
-            headers={
-                'Content-Type': 'application/json',
-                'anthropic-version': '2023-06-01',
-                'x-api-key': api_key
-            }
+            headers={'Content-Type': 'application/json'}
         )
         with urllib.request.urlopen(req, timeout=15) as response:
             data = json.loads(response.read().decode('utf-8'))
-            text = data['content'][0]['text'].strip()
+            text = data['candidates'][0]['content']['parts'][0]['text'].strip()
             print(f"AI response: {text}")
             clean = text.replace('```json', '').replace('```', '').strip()
             result = json.loads(clean)
